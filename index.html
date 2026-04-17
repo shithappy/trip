@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>青森·仙台 "修司忌" 朝圣之旅 v4</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Hiragino Sans', 'Noto Sans SC', 'PingFang SC', -apple-system, sans-serif; color: #1e293b; background: #f8fafc; }
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 8px 32px; }
+
+/* Header */
+.header { text-align: center; padding: 32px 16px 24px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 0 0 16px 16px; margin-bottom: 20px; color: #fff; }
+.header .date-range { font-size: 11px; letter-spacing: 3px; opacity: 0.6; margin-bottom: 8px; text-transform: uppercase; }
+.header h1 { font-size: 22px; font-weight: 800; line-height: 1.3; }
+.header h1 .red { color: #f87171; }
+.header .sub { font-size: 12px; opacity: 0.5; margin-top: 8px; }
+
+/* Tabs */
+.tabs { display: flex; margin-bottom: 16px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+.tabs button { flex: 1; padding: 10px 0; font-size: 13px; font-weight: 600; border: none; cursor: pointer; background: #fff; color: #64748b; transition: all 0.15s; font-family: inherit; }
+.tabs button.active { background: #1e293b; color: #fff; }
+
+/* Controls */
+.controls { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 12px; }
+.controls button { font-size: 11px; color: #64748b; background: none; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-family: inherit; }
+.controls button:hover { background: #f8fafc; }
+
+/* Day Card */
+.day-card { margin-bottom: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+.day-card.open { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.day-card.key-day { border: 2px solid #dc2626; background: #fef2f2; }
+
+.day-header { display: flex; align-items: center; padding: 14px 16px; cursor: pointer; gap: 12px; user-select: none; }
+.day-badge { width: 44px; height: 44px; border-radius: 10px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; }
+.day-badge .num { font-size: 14px; }
+.day-badge .month { font-size: 9px; opacity: 0.8; }
+.day-info { flex: 1; min-width: 0; }
+.day-title { font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.3; }
+.day-card.key-day .day-title { color: #dc2626; }
+.day-meta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.day-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.mood-tag { font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+.arrow { font-size: 16px; color: #94a3b8; transition: transform 0.2s; display: inline-block; }
+.day-card.open .arrow { transform: rotate(180deg); }
+
+/* Day Body */
+.day-body { padding: 0 16px 16px; border-top: 1px solid #f1f5f9; display: none; }
+.day-card.open .day-body { display: block; }
+.timeline { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.timeline-item { display: flex; gap: 10px; }
+.timeline-time { width: 62px; flex-shrink: 0; font-size: 11px; font-weight: 600; padding-top: 1px; text-align: right; }
+.timeline-content { flex: 1; font-size: 13px; line-height: 1.65; color: #334155; padding-left: 12px; }
+
+/* Bus table */
+.bus-table { margin-top: 14px; overflow-x: auto; }
+.bus-table table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.bus-table th { padding: 6px 8px; font-weight: 600; text-align: left; }
+.bus-table td { padding: 5px 8px; border-bottom: 1px solid #f1f5f9; color: #475569; }
+
+/* Tip box */
+.tip { margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; font-size: 12px; line-height: 1.6; color: #166534; }
+
+/* Logistics */
+.info-card { padding: 14px 16px; border-radius: 10px; background: #fff; border: 1px solid #e2e8f0; margin-bottom: 12px; }
+.info-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.info-card p { font-size: 13px; line-height: 1.65; color: #475569; }
+.info-card.yellow { background: #fffbeb; border-color: #fde68a; }
+.info-card.blue { background: #f0f9ff; border-color: #bae6fd; }
+.info-card .sub-text { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+/* Budget */
+.budget-table { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+.budget-table table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.budget-table th { padding: 10px 12px; text-align: left; font-weight: 700; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+.budget-table th:nth-child(2) { text-align: right; }
+.budget-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+.budget-table td:nth-child(2) { text-align: right; font-weight: 600; }
+.budget-table td:nth-child(3) { color: #94a3b8; font-size: 12px; }
+.budget-table tr:nth-child(even) { background: #f8fafc; }
+.budget-note { font-size: 11px; color: #94a3b8; margin-top: 10px; padding: 0 4px; line-height: 1.6; }
+
+/* Checklist */
+.checklist-group { margin-bottom: 16px; }
+.checklist-group h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px 8px 0 0; }
+.checklist-group h3.red { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-bottom: none; }
+.checklist-group h3.orange { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; border-bottom: none; }
+.checklist-group h3.yellow { background: #fefce8; color: #a16207; border: 1px solid #fef08a; border-bottom: none; }
+.checklist-group h3.gray { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-bottom: none; }
+.checklist-items { border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px; overflow: hidden; }
+.checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; line-height: 1.6; color: #334155; cursor: pointer; user-select: none; transition: background 0.1s; }
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item:hover { background: #f8fafc; }
+.checklist-item.checked { opacity: 0.5; text-decoration: line-through; }
+.checklist-item input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; accent-color: #16a34a; cursor: pointer; }
+.checklist-item .item-main { flex: 1; }
+.checklist-item .item-link { font-size: 11px; color: #2563eb; text-decoration: none; display: inline-block; margin-top: 2px; }
+.checklist-item .item-link:hover { text-decoration: underline; }
+.checklist-item .item-note { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+.checklist-progress { text-align: center; padding: 12px; font-size: 12px; color: #94a3b8; }
+.checklist-progress .bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin: 8px auto 0; max-width: 300px; overflow: hidden; }
+.checklist-progress .bar-fill { height: 100%; background: #16a34a; border-radius: 3px; transition: width 0.3s; }
+
+/* Footer */
+.footer { text-align: center; padding: 24px 0 16px; font-size: 12px; color: #94a3b8; line-height: 1.6; }
+.footer .gen { font-size: 10px; }
+
+/* Tab panels */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Print */
+@media print {
+  .tabs, .controls { display: none !important; }
+  .day-body { display: block !important; }
+  .day-card { break-inside: avoid; box-shadow: none !important; }
+  .tab-panel { display: block !important; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="date-range">2026.04.29 — 05.06</div>
+  <h1>青森 · 仙台<br><span class="red">"修司忌"</span>朝圣之旅</h1>
+  <div class="sub">8天7晚 · 终版 v4.2 · われに五月を</div>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="switchTab('itinerary')">每日行程</button>
+  <button onclick="switchTab('logistics')">交通物流</button>
+  <button onclick="switchTab('budget')">费用参考</button>
+  <button onclick="switchTab('checklist')">预订清单</button>
+</div>
+
+<!-- ==================== ITINERARY TAB ==================== -->
+<div id="tab-itinerary" class="tab-panel active">
+<div class="controls">
+  <button onclick="expandAll()">全部展开</button>
+  <button onclick="collapseAll()">全部收起</button>
+</div>
+
+<!-- Day 1 -->
+<div class="day-card open" data-color="#64748b">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#64748b"><span class="num">29</span><span class="month">/4</span></div>
+    <div class="day-info"><div class="day-title">香港 → 仙台 → 八户</div><div class="day-meta">Day 1 · 三 · 住 八户</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#64748b18;color:#64748b">✈️ 移动日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">08:00</div><div class="timeline-content" style="border-left:2px solid #64748b22">香港直飞仙台（HK Express 约5小时，预计13:00左右到达）。过海关、取行李约30-40分钟。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">14:00</div><div class="timeline-content" style="border-left:2px solid #64748b22">仙台机场线到仙台站（约25分钟）。在 JR 绿色窗口激活 JR EAST PASS，预约后续新干线指定席。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">🍽 14:30</div><div class="timeline-content" style="border-left:2px solid #64748b22"><b>午餐（仙台站）：</b>趁等新干线的空档在仙台站内解决。推荐3楼「牛たん通り」先尝一次牛舌（利久/善治郎），或站内便当店买「牛たん弁当」上新干线吃。不想排队的话，地下1楼「すし通り」也不错。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">15:30</div><div class="timeline-content" style="border-left:2px solid #64748b22">东北新干线 はやぶさ → 八户站（约1.5小时）。约17:00到达八户，入住站西口附近酒店。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">晚上</div><div class="timeline-content" style="border-left:2px solid #64748b22">去「みろく横丁」体验八户屋台村——26间小店挤在一条小巷里，一人份的小菜配日本酒，是八户最有烟火气的地方。推荐尝八户名物「せんべい汁」（煎饼汤）。</div></div>
+    </div>
+    <div class="tip">💡 八户站西口步行范围内有多家商务酒店（Dormy Inn、Route Inn、Comfort 等）。到达后去便利店买好明天的早餐（饭团、面包、咖啡），因为明天08:00就要上巴士。</div>
+  </div>
+</div>
+
+<!-- Day 2 -->
+<div class="day-card" data-color="#16a34a">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#16a34a"><span class="num">30</span><span class="month">/4</span></div>
+    <div class="day-info"><div class="day-title">奥入濑溪流 · 新绿轻徒步 + 蕪島神社</div><div class="day-meta">Day 2 · 四 · 住 八户</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#16a34a18;color:#16a34a">🌿 户外日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">🍽 07:00</div><div class="timeline-content" style="border-left:2px solid #16a34a22"><b>早餐：</b>昨晚便利店买好的饭团/面包/咖啡，酒店房间内或车站候车时吃。Dormy Inn 有付费早餐（约1,000日圆）也可考虑。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">08:00</div><div class="timeline-content" style="border-left:2px solid #16a34a22">八户站西口搭乘 JR 巴士「おいらせ号」（需预约，持周游券免费）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">10:30</div><div class="timeline-content" style="border-left:2px solid #16a34a22">抵达「石户」巴士站下车。这里有石户休息所，可以存包、上洗手间。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">10:30-12:30</div><div class="timeline-content" style="border-left:2px solid #16a34a22">沿溪流步道徒步：石户 → 阿修罗之流 → 云井之瀑。全程约 4km，平坦好走，约 1.5-2 小时。5月初正是「新绿」最美的时节——嫩绿的枫叶、翠绿的苔藓、清澈的溪水，层次丰富得像水彩画。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">🍽 12:30</div><div class="timeline-content" style="border-left:2px solid #16a34a22"><b>午餐：</b>溪流沿途没有正式餐厅，建议在八户便利店提前买好饭团和零食，在石户休息所或溪边野餐。也可在「奥入瀬渓流館」买简单轻食。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">13:00</div><div class="timeline-content" style="border-left:2px solid #16a34a22">在沿途巴士站上车返回八户。回程车内小憩，约15:00-15:30到达八户站。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">16:00</div><div class="timeline-content" style="border-left:2px solid #16a34a22"><b>蕪島神社：</b>八户站搭 JR 八户线到鮫站（约25分钟），步行15分钟到蕪島。5月正是数万羽ウミネコ（海猫鸥）的产卵育雏季，是全日本唯一能如此近距离观察的地方，非常壮观。山顶蕪嶋神社2020年火灾后重建，「かぶあがりひょうたん御守」（升值葫芦御守）很有名。参观约30分钟。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#16a34a">晚上</div><div class="timeline-content" style="border-left:2px solid #16a34a22">鮫站/蕪島附近是渔港区域，可以就近找海鲜食堂吃晚餐。或者回八户去「八食中心」自选食材在「七厘村」自助炭烤。</div></div>
+    </div>
+    <div class="tip">💡 穿防水徒步鞋，溪边湿滑。带薄外套，溪谷比平地凉3-5°C。蕪島ウミネコ糞注意——可以带折叠伞防护，或到现场借伞。拜殿开放到16:00，但岛上随时可去。今晚记得在便利店买好明天的早餐，恐山日06:30就要出门。</div>
+  </div>
+</div>
+
+<!-- Day 3 -->
+<div class="day-card" data-color="#7c3aed">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#7c3aed"><span class="num">1</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">恐山 · 开山首日朝圣</div><div class="day-meta">Day 3 · 五 · 住 八户</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#7c3aed18;color:#7c3aed">⛩️ 灵场日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">🍽 08:00</div><div class="timeline-content" style="border-left:2px solid #7c3aed22"><b>早餐：</b>便利店买好的饭团/面包，或酒店早餐。今天不用赶早班巴士，可以正常起床。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">09:00</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">八户站搭乘青い森铁道 → 野辺地 → JR 大湊线 → 下北站。全程约 1 小时 50 分。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">11:20</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">下北站前搭乘恐山巴士（第二班 11:20 发车，12:03 到达恐山）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">🍽 12:10</div><div class="timeline-content" style="border-left:2px solid #7c3aed22"><b>午餐：</b>先去恐山境内食堂吃乌冬面或咖喱饭（约800日圆），填饱肚子再慢慢逛。也可自带饭团。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">12:30-15:00</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">恐山境内游览（约2.5小时，非常从容）：总门 → 山门 → 地藏殿参拜 → 硫磺地狱（荒凉火山岩地貌，弥漫硫磺蒸汽）→ 赛之河原（河滩上堆满小石塔）→ 极乐浜（宇曾利湖白沙滩，碧蓝湖水与荒凉地貌形成强烈对比，最佳拍照点）。之后泡境内免费温泉（男女各一处，硫磺泉，很有野趣），买个御守。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">15:55</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">搭乘恐山末班巴士返回（15:55 发车，16:30 到下北站）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">16:30</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">下北站搭电车返回八户，预计18:20左右到达。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#7c3aed">晚上</div><div class="timeline-content" style="border-left:2px solid #7c3aed22">八户市区休息。恐山一天下来会有点累，简单吃个晚饭早点休息。推荐试试「いちご煮」（海胆海鲜汤）。</div></div>
+    </div>
+    <div class="bus-table">
+      <table>
+        <thead><tr><th style="background:#7c3aed12;color:#7c3aed;border-bottom:1px solid #7c3aed30">方向</th><th style="background:#7c3aed12;color:#7c3aed;border-bottom:1px solid #7c3aed30">班次1</th><th style="background:#7c3aed12;color:#7c3aed;border-bottom:1px solid #7c3aed30">班次2 ✅</th><th style="background:#7c3aed12;color:#7c3aed;border-bottom:1px solid #7c3aed30">班次3</th></tr></thead>
+        <tbody>
+          <tr><td>去程（下北站→恐山）</td><td>9:10→9:53</td><td><b>11:20→12:03</b></td><td>14:10→14:53</td></tr>
+          <tr><td>回程（恐山→下北站）</td><td>10:55→11:30</td><td>13:05→13:40</td><td><b>15:55→16:30</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip">💡 选择第二班去（11:20）+ 末班回（15:55），在恐山待近4小时，非常从容。入山费 500 日圆现金。硫磺味较重，呼吸道敏感者注意。境内温泉是难得的体验，建议带条小毛巾。</div>
+  </div>
+</div>
+
+<!-- Day 4 -->
+<div class="day-card" data-color="#2563eb">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#2563eb"><span class="num">2</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">青森一日：县立美术馆 + 市区漫步</div><div class="day-meta">Day 4 · 六 · 住 青森</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#2563eb18;color:#2563eb">🎨 文化日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">🍽 07:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22"><b>早餐（推荐！）：陸奥湊站前朝市</b>——八户站坐 JR 八户线两站到陸奥湊（约5分钟），6:00就开门。新鲜的烤鱿鱼、海鲜味噌汤、刺身早餐，是八户最地道的早市体验。吃完顺便逛逛渔港氛围。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">08:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22">回八户站，在酒店用黑猫宅急便将大件行李寄往仙台酒店（约 1,500 日圆，次日达）。轻装出发。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">09:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22">八户站搭乘青い森铁道 → 青森站（约 2 小时）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">11:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22">青森站前搭巴士到县立美术馆（约 20 分钟）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">11:00-13:30</div><div class="timeline-content" style="border-left:2px solid #2563eb22">青森县立美术馆（9:30-17:00 / 常设展约510日圆）：必看——奈良美智巨型「青森犬」雕塑（8.5米高，蹲坐在壕沟中，四季表情不同）；夏加尔巨幅芭蕾舞台背景画（21m×15m，世界最大级）；棟方志功展区。白色几何建筑本身也值得慢逛。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">🍽 14:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22"><b>午餐：</b>返回青森站，推荐站前「お鶴さん」的味噌咖喱牛奶拉面（青森名物），或青森鱼菜中心的「のっけ丼」（自选海鲜盖饭，券10枚1,500日圆）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">15:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22"><b>ねぶたの家 ワ・ラッセ</b>（青森站步行1分钟 / 620日圆 / 9:00-18:00）：实际出阵过的巨型ねぶた灯笼4台常设展示，2层楼高的吹抜空间非常震撼。每天 11:10 / 13:10 / 15:10 有ねぶた囃子生演奏和跳人（ハネト）体验，争取赶上15:10那场。参观约40-60分钟。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">16:00-17:00</div><div class="timeline-content" style="border-left:2px solid #2563eb22">ワ・ラッセ出来后步行到隔壁 A-FACTORY（苹果酒试饮机、苹果伴手礼）→ 善知鸟神社 → 青森站附近闲逛。八甲田丸（青函联络船纪念馆）也在港口旁。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#2563eb">晚上</div><div class="timeline-content" style="border-left:2px solid #2563eb22">入住青森市内酒店。晚餐推荐「貝焼き味噌」（扇贝壳烤味噌鸡蛋，津轻乡土料理）。</div></div>
+    </div>
+    <div class="tip">💡 美术馆周一休馆——5/2 是周六没问题。馆内不可拍照（青森犬户外区域可以）。ワ・ラッセ、A-FACTORY、鱼菜中心全部在青森站步行3分钟内，下午一条线逛完。A-FACTORY 苹果酒试饮机投币即品，很有趣。</div>
+  </div>
+</div>
+
+<!-- Day 5 -->
+<div class="day-card" data-color="#0891b2">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#0891b2"><span class="num">3</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">浅虫水族馆 + 温泉 → 三泽</div><div class="day-meta">Day 5 · 日 · 住 三泽</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#0891b218;color:#0891b2">🐬 休闲日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">09:00</div><div class="timeline-content" style="border-left:2px solid #0891b222">青森站搭青い森铁道到浅虫温泉站（约 20 分钟），步行 10 分钟到浅虫水族馆。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">09:00-11:30</div><div class="timeline-content" style="border-left:2px solid #0891b222">浅虫水族馆（9:00-17:00 / 1,200日圆 / 高中以下免费）：本州最北端水族馆。必看——15米隧道水槽「陆奥湾之海」；津轻三味线+ねぶた囃子配乐海豚表演（全国独此一家）；海豹企鹅馆；触摸池。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">11:30-13:00</div><div class="timeline-content" style="border-left:2px solid #0891b222">浅虫温泉街：泡足汤或选一家日归温泉（推荐「辰巳館」或「南部屋」，海景露天风吕）。午餐在温泉街海鲜食堂解决。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">14:00</div><div class="timeline-content" style="border-left:2px solid #0891b222">浅虫温泉站搭青い森铁道 → 三泽站（约 1 小时）。方向顺路不绕弯。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">15:00</div><div class="timeline-content" style="border-left:2px solid #0891b222">入住三泽市区酒店（Route Inn / AURUM / Trust Inn 等，三泽站打车约 8-10 分钟）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#0891b2">下午-晚</div><div class="timeline-content" style="border-left:2px solid #0891b222">三泽休闲：三泽空港温泉（步行 5 分钟，营业到深夜）或アメリカンビレッジ感受日美混合文化。晚餐试三泽名物「バラ焼き」（甜辣酱炒牛五花洋葱，B级美食冠军）。</div></div>
+    </div>
+    <div class="tip">💡 浅虫水族馆 GW 人多，建议开馆就进。海豚表演场次请当天馆内确认。三泽市区温泉资源丰富，号称「温泉天国」。</div>
+  </div>
+</div>
+
+<!-- Day 6 - KEY DAY -->
+<div class="day-card key-day" data-color="#dc2626">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#dc2626"><span class="num">4</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">寺山修司忌 · 纪念馆 Festival 2026 春</div><div class="day-meta">Day 6 · 一/祝 · 住 三泽</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#dc262618;color:#dc2626">✨ 核心日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">08:15</div><div class="timeline-content" style="border-left:2px solid #dc262622">从酒店打车前往寺山修司纪念馆（约 15-20 分钟，约 2,000 日圆）。目标 8:30 前到馆排队。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">09:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">开馆。售卖三上博史 Live 门票（限 200 张 / 3,500 日圆含入馆费 / 整理番号制）。抢到票后参观馆内展览。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">09:00-11:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">馆内参观：寺山修司生诞 90 年特别企划展「あゝ、荒野」バロン吉元原画展 + 常设展「想像力壁橱」——诗、剧本、电影、照片在小房间中构成沉浸式体验。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">11:00-13:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">屋外テラヤマルシェ美食市集（约10家摊位）：テラヤマバーガー / テラシュー泡芙 / 自家烘焙咖啡 / 石烤豆腐田乐·煎饼汁 / 熏制汉堡·自制柠檬水 / 华夫饼 / 素食点心 / 三明治鸡尾酒 / 民族杂货...... 还有木工游乐装置「ムシムシコロコロ·パーク」。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">13:00-14:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">修司忌仪式（寺山修司显彰文学碑前）：献花（任何人可参加）→ 朗读「われに五月を」（三泽中学生）→ オドラデク道路剧场舞踏表演（福士正一 / 横笛 HIROMASA）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">14:00-16:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">自由时间：继续逛市集、重看展览、在纪念馆周围森林散步。16:00 后馆内暂停展示以准备 Live。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">16:30-18:00</div><div class="timeline-content" style="border-left:2px solid #dc262622">三上博史 Live（馆内）：脚本 高田恵篤 / 出演 三上博史 + エミ·エレオノーラ。200 人限定的亲密空间。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">18:00+</div><div class="timeline-content" style="border-left:2px solid #dc262622">活动结束。搭乘临时巴士：纪念馆 → 三泽空港 → 三泽站。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#dc2626">晚上</div><div class="timeline-content" style="border-left:2px solid #dc262622">回到三泽酒店或去泡温泉。修司忌的一天，圆满结束。</div></div>
+    </div>
+    <div class="tip">💡 入馆费 700 日圆（买 Live 票已含）。屋外活动免费。荒天时室外活动取消、仪式改馆内。请带现金。带マイタンブラー（自带杯）配合环保要求。没抢到 Live 票也无妨——修司忌仪式和市集本身就是完整的体验。</div>
+  </div>
+</div>
+
+<!-- Day 7 -->
+<div class="day-card" data-color="#ea580c">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#ea580c"><span class="num">5</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">三泽 → 仙台 · 牛舌与购物</div><div class="day-meta">Day 7 · 二 · 住 仙台</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#ea580c18;color:#ea580c">🛒 美食购物</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">09:00</div><div class="timeline-content" style="border-left:2px solid #ea580c22">退房。三泽站搭青い森铁道 → 八户站（约25分钟），转东北新干线 → 仙台站（约1.5小时）。全程约 2 小时。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">11:30</div><div class="timeline-content" style="border-left:2px solid #ea580c22">到达仙台站。寄存行李到酒店或 coin locker。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">12:00</div><div class="timeline-content" style="border-left:2px solid #ea580c22">午餐：仙台站 3 楼「牛たん通り」—— 利久（厚切炭烤，最有名）/ 善治郎（真中たん最嫩）/ 喜助（老字号）。建议 11:30 就去排队避开高峰。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">14:00-16:00</div><div class="timeline-content" style="border-left:2px solid #ea580c22">散步 &amp; 购物：仙台朝市（站旁步行5分钟）→ 商店街クリスロード / 一番町 → 瑞凤殿（伊达政宗灵庙，巴士15分钟，桃山建筑精美）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">16:00-17:00</div><div class="timeline-content" style="border-left:2px solid #ea580c22">伴手礼：萩之月 / 笹蒲鉾 / ずんだ餅（毛豆泥麻糬）/ 牛舌罐头。仙台站 2 楼おみやげ处最全。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#ea580c">晚上</div><div class="timeline-content" style="border-left:2px solid #ea580c22">入住仙台酒店（之前寄的行李应已到达）。晚餐可以试「せり鍋」（芹菜火锅）或去国分町居酒屋街。</div></div>
+    </div>
+    <div class="tip">💡 仙台朝市周日休市——5/5 是周二没问题。仙台站内购物设施集中：S-PAL / エスパル / 牛たん通り / すし通り / おみやげ处 都在站内或直连。</div>
+  </div>
+</div>
+
+<!-- Day 8 -->
+<div class="day-card" data-color="#64748b">
+  <div class="day-header" onclick="toggleDay(this)">
+    <div class="day-badge" style="background:#64748b"><span class="num">6</span><span class="month">/5</span></div>
+    <div class="day-info"><div class="day-title">仙台 → 返程</div><div class="day-meta">Day 8 · 三 · 住 —</div></div>
+    <div class="day-right"><span class="mood-tag" style="background:#64748b18;color:#64748b">🛫 返程日</span><span class="arrow">▾</span></div>
+  </div>
+  <div class="day-body">
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">早上</div><div class="timeline-content" style="border-left:2px solid #64748b22">根据航班时间安排。如果航班较晚，上午可去三井 Outlet（仙台港）扫货或去仙台城迹俯瞰全景。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">午前</div><div class="timeline-content" style="border-left:2px solid #64748b22">仙台站搭仙台机场线 → 仙台机场（约 25 分钟）。</div></div>
+      <div class="timeline-item"><div class="timeline-time" style="color:#64748b">午后</div><div class="timeline-content" style="border-left:2px solid #64748b22">仙台机场 → 香港。われに五月を——朝圣之旅圆满结束。</div></div>
+    </div>
+    <div class="tip">💡 仙台机场免税店不大，伴手礼在仙台站买好。机场有牛舌便当可以买了飞机上吃。</div>
+  </div>
+</div>
+
+</div><!-- end itinerary tab -->
+
+<!-- ==================== LOGISTICS TAB ==================== -->
+<div id="tab-logistics" class="tab-panel">
+  <div class="info-card"><h3>🏨 住宿策略</h3><p>八户 3 晚（4/29-5/1）→ 青森 1 晚（5/2）→ 三泽 2 晚（5/3-5/4）→ 仙台 1 晚（5/5）。全程搬 4 次行李，其中八户→仙台用黑猫宅急便，实际只背包移动。</p></div>
+  <div class="info-card"><h3>🚄 JR Pass</h3><p>JR 东日本周游券（东北地区）覆盖：东北新干线、青い森铁道、JR 大湊线、JR 巴士奥入濑线。不含：恐山下北交通巴士、修司忌临时巴士（免费）。</p></div>
+  <div class="info-card"><h3>📦 行李</h3><p>5/2 早上在八户酒店用黑猫宅急便寄行李到仙台酒店（约 1,500 日圆 / 次日达）。之后 3 天只带随身包轻装移动。</p></div>
+  <div class="info-card"><h3>💴 现金</h3><p>准备 3-4 万日圆。恐山入山费、下北交通巴士、修司忌 Live 门票、部分温泉和偏远餐厅需现金。</p></div>
+  <div class="info-card yellow"><h3>🚌 5/4 修司忌散场交通</h3><p>活动结束后有临时巴士：纪念馆 → 三泽空港 → 三泽站。住三泽市区的话，下车即到。完全不用赶新干线，这是住三泽的最大优势。</p></div>
+  <div class="info-card blue"><h3>📍 住宿路线总览</h3><p>八户（3晚）→ 青森（1晚）→ 三泽（2晚）→ 仙台（1晚）</p><p class="sub-text">三泽市区商务酒店推荐：Route Inn / AURUM / Trust Inn / プリンセスホテル（三泽站打车约8-10分钟）</p></div>
+</div>
+
+<!-- ==================== BUDGET TAB ==================== -->
+<div id="tab-budget" class="tab-panel">
+  <div class="budget-table">
+    <table>
+      <thead><tr><th>项目</th><th>日圆</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td>JR 东日本周游券</td><td>~20,000</td><td>14天灵活型</td></tr>
+        <tr><td>恐山巴士（往返）</td><td>~1,600</td><td>下北站⇌恐山</td></tr>
+        <tr><td>恐山入山费</td><td>500</td><td></td></tr>
+        <tr><td>青森县立美术馆</td><td>~510</td><td>常设展</td></tr>
+        <tr><td>浅虫水族馆</td><td>1,200</td><td></td></tr>
+        <tr><td>寺山修司纪念馆</td><td>700</td><td>2026/4 起新价格</td></tr>
+        <tr><td>三上博史 Live</td><td>3,500</td><td>含入馆费 / 限200张</td></tr>
+        <tr><td>黑猫宅急便</td><td>~1,500</td><td>八户→仙台</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="budget-note">* 以上不含机票、酒店和餐饮。JR Pass 及各景点价格请以购买时官网为准。</div>
+</div>
+
+<!-- ==================== CHECKLIST TAB ==================== -->
+<div id="tab-checklist" class="tab-panel">
+
+<div class="checklist-progress">
+  <span id="progress-text">0 / 14 已完成</span>
+  <div class="bar"><div class="bar-fill" id="progress-bar" style="width:0%"></div></div>
+</div>
+
+<div class="checklist-group">
+  <h3 class="red">🔴 立刻预订（距出发仅2周，每晚一天少一分）</h3>
+  <div class="checklist-items">
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>机票：香港 ⇌ 仙台</b>（4/29去、5/6回）<div class="item-note">直飞：HK Express / 大湾区航空 / 香港航空。比价：Skyscanner、Trip.com、永安旅游</div><a class="item-link" href="https://www.skyscanner.com.hk/flights-to/sdj/" target="_blank">→ Skyscanner 查价</a></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>酒店：八户 3晚</b>（4/29-5/1）<div class="item-note">推荐八户站西口：Dormy Inn / Route Inn / Comfort Hotel。Booking.com / 楽天トラベル</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>酒店：青森 1晚</b>（5/2）<div class="item-note">青森站周边。推荐：东横INN / Route Inn / Richmond Hotel</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>酒店：三泽 2晚</b>（5/3-5/4）<div class="item-note">星野青森屋已满。备选：Route Inn / AURUM / Trust Inn / プリンセスホテル（三泽站打车8-10分钟）</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>酒店：仙台 1晚</b>（5/5）<div class="item-note">仙台站周边。这也是黑猫宅急便收件地址，需先确定</div></div></label>
+  </div>
+</div>
+
+<div class="checklist-group">
+  <h3 class="orange">🟠 这两天内搞定</h3>
+  <div class="checklist-items">
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>JR EAST PASS（新版）</b>— 5天 35,000 日圆<div class="item-note">2026/3/14起旧版Tohoku area已停售，新版覆盖全JR东日本。在线购买，仙台站取票激活</div><a class="item-link" href="https://www.eki-net.com/en/jreast-train-reservation/" target="_blank">→ JR-EAST Train Reservation</a></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>新干线指定席预约</b><div class="item-note">关键段：4/29 仙台→八户 / 5/5 八户→仙台。买完 JR Pass 后在同一网站预约</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>JR 巴士「おいらせ号」预约</b>（4/30 八户→奥入濑）<div class="item-note">黄金周热门线路可能满座。JR巴士东北官网预约</div><a class="item-link" href="https://www.jrbustohoku.co.jp/towadako-oirase/" target="_blank">→ JR巴士东北 十和田湖·奥入濑</a></div></label>
+  </div>
+</div>
+
+<div class="checklist-group">
+  <h3 class="yellow">🟡 出发前一周</h3>
+  <div class="checklist-items">
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>恐山巴士时刻确认</b><div class="item-note">下北交通官网确认5/1班次：去 11:20 / 回 15:55。不用预约但务必确认没变</div><a class="item-link" href="https://shimoko.jp/" target="_blank">→ 下北交通</a></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>准备现金 3-4 万日圆</b><div class="item-note">恐山入山费、下北巴士、修司忌Live门票、部分温泉和偏远餐厅需现金</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>装备检查</b><div class="item-note">防水徒步鞋（奥入濑）/ 折叠伞（蕪島防ウミネコ）/ 小毛巾（恐山温泉）/ 薄外套（溪谷凉）</div></div></label>
+  </div>
+</div>
+
+<div class="checklist-group">
+  <h3 class="gray">⚪ 到了当天 / 无法提前</h3>
+  <div class="checklist-items">
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>黑猫宅急便寄行李</b>（5/2 早上 八户酒店前台办理）<div class="item-note">寄往仙台酒店，约1,500日圆，次日达。需要仙台酒店地址和入住人姓名</div></div></label>
+    <label class="checklist-item"><input type="checkbox" onchange="updateProgress()"><div class="item-main"><b>三上博史 Live 门票</b>（5/4 当日 9:00 纪念馆现场）<div class="item-note">限200张 / 3,500日圆含入馆费 / 整理番号制 / 无法提前预订。8:30前到场排队</div></div></label>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  われに五月を —— 祝朝圣之旅圆满<br>
+  <span class="gen">生成于 2026.04.16</span>
+</div>
+
+</div><!-- end wrap -->
+
+<script>
+function toggleDay(header) {
+  header.closest('.day-card').classList.toggle('open');
+}
+function expandAll() {
+  document.querySelectorAll('.day-card').forEach(c => c.classList.add('open'));
+}
+function collapseAll() {
+  document.querySelectorAll('.day-card').forEach(c => c.classList.remove('open'));
+}
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+function updateProgress() {
+  var boxes = document.querySelectorAll('#tab-checklist input[type="checkbox"]');
+  var checked = document.querySelectorAll('#tab-checklist input[type="checkbox"]:checked');
+  var total = boxes.length;
+  var done = checked.length;
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 已完成';
+  document.getElementById('progress-bar').style.width = (total ? Math.round(done/total*100) : 0) + '%';
+  boxes.forEach(function(cb) {
+    cb.closest('.checklist-item').classList.toggle('checked', cb.checked);
+  });
+}
+</script>
+</body>
+</html>
